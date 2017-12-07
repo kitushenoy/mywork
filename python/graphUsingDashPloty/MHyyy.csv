@@ -1,0 +1,7 @@
+RunNo,Step,Power_mT,Power_60Mhz,Power_State0,Power,27Mhz,PowerState1,Power_Mhz,Power_Step2,DutyCycle,r_R_hz,Bulk_C,Flow_M,Ratio_E,BulkGas_a,BulkGas_b,BulkGas_c,BulkGas_d,BulkGas_e,BulkGas_f,BulkGas_g,BulkGas_h,BulkGas_i,TuningGas_k,TuningGas_x,TuningGas_y,TuningGas_z,Gap_mm,Time_sec,Cycle,Temp_WeTi,Temp_UET0,Temp_LET
+R01,MEx-1,a1,b1,x1,a1,b1,x1,a1,b1,x1,a1,b1,x1,a1,b1,x1,a1,a1,b1,x1,a1,b1,x1,a1,a1,b1,x1,a1,b1,x1,a1,a1,b1
+R02,MEx-2,a2,b1,x1,a2,b1,x1,a2,b1,x1,a2,b1,x1,a2,b1,x1,a2,a2,b1,x1,a2,b1,x1,a2,a2,b1,x1,a2,b1,x1,a2,a2,b1
+R03,MEx-3,a3,b1,x1,a3,b1,x1,a3,b1,x1,a3,b1,x1,a3,b1,x1,a3,a3,b1,x1,a3,b1,x1,a3,a3,b1,x1,a3,b1,x1,a3,a3,b1
+R04,MEx-4,a4,b1,x3,a4,b1,x3,a4,b1,x3,a4,b1,x3,a4,b1,x3,a4,a4,b1,x3,a4,b1,x3,a4,a4,b1,x3,a4,b1,x3,a4,a4,b1
+R05,MEx-5,a5,b1,x3,a5,b1,x3,a5,b1,x3,a5,b1,x3,a5,b1,x3,a5,a5,b1,x3,a5,b1,x3,a5,a5,b1,x3,a5,b1,x3,a5,a5,b1
+R06,MEx-6,a6,b1,x1,a6,b1,x1,a6,b1,x1,a6,b1,x1,a6,b1,x1,a6,a6,b1,x1,a6,b1,x1,a6,a6,b1,x1,a6,b1,x1,a6,a6,b1
