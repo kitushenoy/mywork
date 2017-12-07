@@ -34,14 +34,13 @@ df["xxxDepth"] = df["xxxDepth"].fillna(0.0).astype(int)
 df["RatioBxxCD_xxx"] = pd.to_numeric(df.BxxCD)/pd.to_numeric(df.xxxDepth)
 
 print " Lets look at the difference in recipes"
-
 print " Printing distinct values for Recipe to show in the graph"
+
 dfn =pd.unique(dfR[list(dfR.columns.values)].values)
 ff= []
 for n in dfn:
         ff.append(list(n))
 gg1=pd.DataFrame(ff,columns=dfR.columns.values)
-#print gg1
 graph_options = ['bar','scatter','line']
 
 runNum=['R01','R02']
@@ -60,9 +59,7 @@ def generate_table(dataframe):
                 }
     )
 
-
 # start tab app
-
 
 app.scripts.config.serve_locally = True
 
@@ -208,8 +205,8 @@ def update_graph(value,graph_opn_value):
 
 
 
-
-#dcc._css_dist[0]['relative_package_path'].append('/Users/20163/anaconda/lib/python2.7/site-packages/dash_core_components/mycss1.css')
+#Does not work
+#dcc._css_dist[0]['relative_package_path'].append('/Users/xxx/anaconda/lib/python2.7/site-packages/dash_core_components/mycss1.css')
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 if __name__ == '__main__':
     app.run_server(debug=True)
