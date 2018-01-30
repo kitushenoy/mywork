@@ -3,7 +3,7 @@
 """
 Created on Tue Jan 30 14:10:39 2018
 @author: kirthi shanbhag
-super easy implementation
+super easy implementation of list roatation using reverse algorithm
 """
 
 def test(d=2,a=[1,2,3,4,5]):
