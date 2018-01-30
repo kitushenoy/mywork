@@ -8,11 +8,8 @@ super easy implementation
 
 def test(d=2,a=[1,2,3,4,5]):
     bb=a[:d]
-    print( bb)
     cc=a[d:]
-    print( cc)
     gg=cc[::-1]
-    print(gg)
     print( gg[::-1]+bb[::-1])
 
 test()
