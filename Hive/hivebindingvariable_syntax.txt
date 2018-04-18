@@ -1,0 +1,6 @@
+beeline -u “jdbc:hive2://hostname:port/default;principal=hive/hostname" 
+--hiveconf x='20160725' --hiveconf y="'/xx/tmp_20160725'" 
+--hiveconf z="'hdfs:////xx/Schema/xx_FINAL_SCHEMA.avsc'" 
+-f create.sql
+
+
