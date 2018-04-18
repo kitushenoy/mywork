@@ -1,0 +1,3 @@
+hive -e “select transform(x,y,z)USING 
+‘hdfs:/user/xyz/udaf_aggregate.py' AS (x,y,z,minN,maxN,avgN,MedianN)FROM (select x,y,z from db.table1 CLUSTER BY x,y)
+AS T1
