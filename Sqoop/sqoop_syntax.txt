@@ -1,0 +1,50 @@
+Incremental extract 
+==================
+
+Step 1 :  Run Sqoop command on edge node:
+sqoop import --connect jdbc:mysql://sqlhostname:sqlport/testing_sqoop --username=user --password=test --table test_tbl 
+--target-dir /user/testuser/DemoScenario1 --check-column sq_id --incremental append  --as-avrodatafile
+
+Step 2 : Check HDFS for the file:
+SELECT * FROM testing_sqoop.test_tbl; 
+
+Step 3 : Run SQL Insert:
+
+SET SQL_SAFE_UPDATES = 0;
+insert into testing_sqoop.test_tbl(sq_id,sq_title,sq_author,sq_date,sq_num,sq_action) 
+values (’14', 'test102','testing-7','2011-10-24 10:00:00','700','10');
+
+Step 4 :
+
+sqoop import --connect jdbc:mysql://sqlhost:sqlport/testing_sqoop --username=testuser --password=test --table test_tbl 
+--target-dir /user/username/DemoScenario1 --check-column sq_id --incremental append --last-value 5 --as-avrodatafile
+
+
+Schema Evolution
+==================
+
+-Create table
+-Add two rows 
+-Run Sqoop command:
+sqoop import --connect jdbc:mysql://sqlhost:sqlport/testing_sqoop --username=averma --password=test 
+--table DI_FolderStatus --target-dir /user/testuser/DemoScenario2 --check-column row_id --incremental append 
+--as-avrodatafile
+
+
+Upload Schema Final.avsc [ rename Final1.avsc to Final.avsc]
+Create table :
+CREATE EXTERNAL TABLE DemoScenario2 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe' STORED as INPUTFORMAT 
+'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat' OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat' 
+LOCATION '/user/username/DemoScenario2 /Data/' TBLPROPERTIES ('avro.schema.url'='hdfs:////user/username/DemoScenario2 
+/Schema/Final1.avsc')
+View the table in hive [ select * from TBLTest3]
+Alter table : to add two more columns
+Insert one row
+Run scoop command
+sqoop import --connect jdbc:mysql://sqlhost:port/testing_sqoop --username=averma --password=test --table DI_FolderStatus 
+--target-dir /user/username/DemoScenario2 --check-column row_id --incremental append --as-avrodatafile --last-value 2
+Create table
+Add two rows 
+Run Sqoop command:
+sqoop import --connect jdbc:mysql://sqlhost:3306/testing_sqoop --username=averma --password=test --table DI_FolderStatus
+--target-dir /user/username/DemoScenario2 --check-column row_id --incremental append --as-avrodatafile
