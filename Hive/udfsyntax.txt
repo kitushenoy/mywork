@@ -1,3 +1,29 @@
 hive -e “select transform(x,y,z)USING 
 ‘hdfs:/user/xyz/udaf_aggregate.py' AS (x,y,z,minN,maxN,avgN,MedianN)FROM (select x,y,z from db.table1 CLUSTER BY x,y)
 AS T1
+
+
+
+Hive UDAF function explained :
+=============================
+here's a udaf function example  for aggregating xyz values from <some> table. 
+Final tranformation query - > 
+hive -e “select transform(x,y,z)USING 'hdfs:/user/username/udaf_aggregate2.py' AS (x,y,minN,maxN,avgN,MedianN)FROM (select x,y,z from db.xyz CLUSTER BY x,y,z) AS T1
+Some explanation around it - >
+Hive –e - >  I am trying to run this on linux . You always paste the line in quotes into hue to run on Hive interface.
+select transform(x,y,z . -> You are basically asking the very to transform the data set. Please note that this query columns needs to match with select statement inside the from section.  
+AS (x,y,minN,maxN,avgN,MedianN) - > here you are referring to the columns the python script is displaying on stdout. [ using print statement is fine]. Please note in my example I am calculating the min,max,avg and median. The columns names needs to match with python output. 
+FROM (select x,y,z from db.table -> output of the query is the input to python script. Please note that when you want to run the python script independently, store the output of this query in csv. 
+Use the following command to store the data in csv : 
+ hive -e “select x,y,z from db.table limit 100" | sed 's/[[:space:]]\+/,/g' > dummy.csv
+Finally the cluster by section is to separate the mapper and reducer part and distribute the rows having the same type columns are also located on the same reducer. Hence the columns should be same as your keys in your python script. 
+Please refer to the script at hdfs-> /user/username/udaf_aggregate2.py
+If you want to run the script independently to see if it works, just read it from the file. 
+Means, 
+replace the line - >
+for line in sys.stdin:
+With - > 
+f = open(‘dummy.csv', 'r+')
+for line in f:
+  ......
+ 
