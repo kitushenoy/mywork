@@ -48,3 +48,9 @@ Add two rows
 Run Sqoop command:
 sqoop import --connect jdbc:mysql://sqlhost:3306/testing_sqoop --username=averma --password=test --table DI_FolderStatus
 --target-dir /user/username/DemoScenario2 --check-column row_id --incremental append --as-avrodatafile
+
+View newly inserted data file
+Alter schema file to update schema structure  
+Note : Name of the schema file must be the same
+Finally view the change in the table with new schema and record. 
+
