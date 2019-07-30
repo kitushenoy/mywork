@@ -1,6 +1,6 @@
-extract the dates from db
-select exec_string from xy.xx_Data_Ingestion_Status
-	where datasource='xx' and exec_string >= '20190230' and exec_string < '20190730' and status like '%xxcomplete'#logs=(20190301_00 20190301_01) 
+	#extract the dates from db
+	## Query : select exec_string from xy.xx_Data_Ingestion_Status where datasource='xx' and exec_string >= '20190230' and exec_string < '20190730' and status like '%xxcomplete'#logs=(20190301_00 20190301_01) 
+
 	lpath="/home/xyz/DI/xx/Log/xx_" 
 	echo "TESTING: List out the folders to delete" 
 	for log in ${logs[*]};do if [ -n "$lpath$log" ]; then echo "$lpath$log exist and ready to delete"; ls $lpath$log; ls $lpath$log;else echo "$lpath$log does not exist"; fi;done; 
@@ -26,5 +26,5 @@ select exec_string from xy.xx_Data_Ingestion_Status
 mainmenu 
 	 
 # This executes the main menu function. 
-# Let the fun begin!!!! WOOT WOOT!!!! 
+# Let the fun begin!!!! 
 read -n 1
