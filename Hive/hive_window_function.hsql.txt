@@ -1,0 +1,75 @@
+######################################################################
+# This exercise if for reference purpose; Explains all the window function for hive query#
+#####################################################################
+
+# Create a new external table on hive
+CREATE EXTERNAL TABLE IF NOT EXISTS xyzdb.host(
+date String, 
+Ticker String, 
+Open Double, 
+High Double, 
+Low Double, 
+Close Double, 
+Volume_for_the_day STRING)
+    
+    COMMENT 'test data'
+    ROW FORMAT DELIMITED
+    FIELDS TERMINATED BY ','
+    STORED AS TEXTFILE
+    LOCATION '/user/kshanbhag/windowexperiement'
+    tblproperties("skip.header.line.count"="1")
+    ;
+
+# simple select to see if the data is showing 
+select * from xyzdb.host order by ;
+    
+# Show yesterday closing price against today's price 
+select ticker,date,close, lag(close,2) over (partition by ticker) as yesterdayprice from xyzdb.host;
+select ticker,date,close,lag(close,1) over(partition by ticker) as yesterday_price from xyzdb.host;    
+
+# SHOW VALUE OF NEXT ROW; SHOW CLOSING VALUE OF NEXT DAY SIDE BY SIDE OF TODAY'S CLOSING PRICE
+select ticker, date,close,lead(close,1) over (partition by ticker) as nextdaprice from xyzdb.host;
+
+# show high price FOR THAT window  FOR ALL DAYS
+# USE first_value OVER WINDOW
+select ticker,DATE,first_value(high) over(partition by ticker) as maxval from xyzdb.host;
+
+# SAME BUT LAST ROW FOR THE WINDOW 
+select ticker,DATE,LAST_value(high) over(partition by ticker) as first_high from xyzDB.HOST;
+
+# GET THE COUNT OF THE ROWS FOR THE EXPESSION WRITTEN ON OVER 
+SELECT TICKER,DATE, COUNT(*) OVER(PARTITION BY ticker) as ccount from xyzdb.host;
+
+# get the sum of price over a window expression
+select ticker, date,sum(close) over (partition by ticker) as csm from xyzDB.host;
+
+#find running total of volume over a window
+select ticker, date, sum(volume_for_the_day) over(partition by ticker order by volume_for_the_day) as vol from xyzdb.host;
+
+# find the % of volumen for ticker window 
+select ticker, date,volume_for_the_day,(volume_for_the_day*100/sum(volume_for_the_day) over(partition by ticker))as percentage from xyzdb.host;
+
+# find min of closing price over a window of ticker
+select ticker, date,min(close) over( partition by ticker)  as minimum from xyzdb.host;
+
+# find max of closing price over a window of ticker
+select ticker, date,max(close) over( partition by ticker)  as maxi from xyzdb.host;
+
+#find the average of closing price over a window of ticker 
+# find ranking of closing price over a window of ticker and sort it by rank
+select ticker, date,close,rank() over( partition by ticker order by close)  as ranking from xyzdb.host;
+
+# find the row_number of the ordered close price
+select ticker, date,close,row_number() over(partition by ticker order by close) as rownum from xyzdb.host;
+
+# find the ran of closing price without skipping the raking for next values over a window of ticker and sort closinge price price
+select ticker, close,dense_rank() over (partition by ticker order by close) as denserank from xyzdb.host
+
+# find the cumulative distribution of a value for a window over a expression 
+select ticker,cume_dist() over(partition by ticker order by close)as cumdist from xyzdb.host
+
+#calculate percentage ranking over a window
+select ticker,close,percent_rank() over(partition by ticker order by close)as cumdist from xyzdb.host 
+
+#tile over wwindow. ntile will show the bucket number over a window of value. the 1st bucket contains first 20% in bucket 1 for ntile =5 and so on...
+select ticker, close,ntile(5) over(partition by ticker order by close)as bucketnum from xyzdb.host;
