@@ -1,0 +1,284 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf400
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;\red255\green255\blue11;
+\red11\green76\blue180;\red53\green53\blue53;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c100000\c100000\c100000;\cssrgb\c100000\c100000\c0;
+\cssrgb\c1961\c38824\c75686;\cssrgb\c27059\c27059\c27059;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid201\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid3}
+{\list\listtemplateid4\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid301\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid4}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}{\listoverride\listid4\listoverridecount0\ls4}}
+\margl1440\margr1440\vieww31500\viewh21240\viewkind0
+\deftab720
+\pard\pardeftab720\sl340\partightenfactor0
+
+\f0\fs26 \cf2 \expnd0\expndtw0\kerning0
+#############################################\
+#List of all the hive queries that I worked on so far ; \
+#############################################\
+\
+# Create External table for Avro files ; contains avro files in data folder and schema file in schema folder \
+\
+CREATE EXTERNAL TABLE default.xyzfrmt\
+PARTITIONED BY(pdnam STRING,qualname STRING,abc_ABC STRING,testname STRING)\
+ROW frmt SERDE\'a0\
+'org.apache.hadoop.hive.serde2.avro.AvroSerDe' STORED as INPUTfrmt\'a0\
+'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputfrmt'\'a0\
+OUTPUTfrmt 'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputfrmt'\'a0\
+LOCATION '/sources/XY/Partitioned'\'a0\
+TBLPROPERTIES ('avro.schema.url'='hdfs:////sources/XY/Schema/XY_FINAL_SCHEMA_New.avsc');\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \'a0\
+\'a0\
+# Using substring to match columns with another table\'92s frmt \
+\
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 select a.*,b.* from default.XYZ_lgfrmt a, default.currenttech\'a0\
+where a.qualname = \'91xyzzy\'92\
+and a.id = b.itemno\
+and a.x = b.originalprodx\
+and a.y = b.originalprody\
+and substr(b.itemno, -2)= a.item\
+limit 2\
+\
+\
+select a.*,b.* from default.XYZ_lgfrmt a, default.currenttech\'a0\
+where a.qualname = \'91xyzzy\'92\
+and a.id = b.itemno\
+and a.x = b.originalprodx\
+and a.y = b.originalprody\
+and substr(b.itemno, -2)= a.item\
+limit 2\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \'a0\
+select distinct substr(avro_file_name,1,13)\'a0 from prodqual.prodqual_lg_frmt\
+where substr(avro_file_name,1,13) like 'XYIN%'\
+\
+select distinct substr(avro_file_name,1,11)\'a0 from prodqual.prodqual_lg_frmt\
+\'a0\
+\
+#################################\
+#Pivot the table and joins \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 #################################\
+\
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 select *,x1_name,x1_val, x1,x3,x4 from (select pdnam,parcel,dat,abcABC,test,tmp,pe,id,item,x,y,z,dut,fim,cyclestand,xlk,wl,`string`,\
+map(\'91x1\'92,\'92x1_vale\'92)as map1,\
+map('x2',x2,'x3s',x3s,'x4') as map2,\
+map(\'91X5\'92,x6,) as map3,\
+map(\'91x7\'92,\'92x8\'92,\'92) as map4,\
+map(\'91x6\'92,\'92x7\'92) as map6\'a0\'a0\
+from default.prodcurrent\
+where pdnam ='prodcurrent_1GB' and dat ='ZY-455\'92 and abcABC = 'ABC' and \'a0\
+test = 'ZY') as T1\
+lateral view\'a0explode(map1) xyz1 as x1_name,x1_val\
+lateral view\'a0explode(map2) xyz2 as x2_name,x3\
+lateral view\'a0explode(map3) xyz3 as x3,pgm_loop_s_val\
+lateral view\'a0explode(map4) xyz4 as x4,pgm_loop_s_multip_val\
+lateral view\'a0explode(map5) xyz5 as nam1,namval\
+lateral view\'a0explode(map6) xyz6 as nam, \'a0name2 \'a0\
+\'a0\
+\'a0\'a0\
+select *, key,value from (select pdnam,parcel,dat,abcABC,test,tmp,pe,id,item,x,y,z,dut,fim,cyclestand,xlk,wl,`string`,\
+ead_up_status,\
+map('time_s4_us) as map1,\
+erlp,erlp_multip,\
+from default.prod_qual_parametric_prodcurrent_1g )as t1\
+lateral view\'a0explode(map1) xyz as key,value;\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 SELECT\'a0TRANSFORM (pdnam, qualname, abcABC, testname, cycling, set, page_type,\'a0\'a0sctrsize, fbc, sctrcount)\
+\'a0USING 'hdfs:/user/bdingstapp/reduce2.py pdnam,qualname,abcABC,testname,cycling,set,page_type,sctrsize\'a0\'a07'\
+\'a0AS (pdnam, qualname, abcABC, testname, cycling, set, page_type,\'a0\'a0\'a0sctrsize, ber, sfr)FROM (SELECT pdnam, qualname, abcABC, testname, cycling, set, page_type,\'a0\'a0sctrsize, cast(fbc as int) as fbc, count(*) as sctrcount\'a0\
+FROM ( SELECT pdnam, qualname, abcABC, testname, cycling, set, page_type, sctrsize,map('sctr0', sctr0, 'sctr1', sctr1, 'sctr2', sctr2, 'sctr3', sctr3, 'sctr4', sctr4, 'sctr5', sctr5, 'sctr6', sctr6, 'sctr7', sctr7) as map1\'a0\
+\'a0FROM default.XYZ_lgfrmt\
+\'a0WHERE pdnam = 'prodcurrent_1g_D3'\'a0\'a0AND qualname = 'PreAT7'\'a0\'a0AND abcABC = 'ABC'\'a0\'a0AND testname = 'ZY_ABC_3Hr_HTDR'\'a0\'a0AND set = 0 ) as t1 lateral view\'a0explode(map1) xyz as sctr, fbc\'a0\
+GROUP BY pdnam, qualname, abcABC, testname, cycling, set, page_type,\'a0\'a0sctrsize, fbc\'a0\
+ORDER BY pdnam, qualname, abcABC, testname, cycling, set, page_type,\'a0 sctrsize, fbc) as t1\
+\'a0\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \'a0\
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 with t1 as (select fabid, item, testblock, prodx, prody, testorder, plane, gbbfailaddrdec from slicemap.sm_bics_t6st0_sme1_pidb where testblock="MHOPENabc1" and fabid="EP0286178") select fabid, item, testblock, prodx, prody, testorder, plane, gbb from t1 lateral view\'a0explode(split(gbbfailaddrdec, "\\\\073")) t as gbb\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \'a0\
+\'a0\
+SELECT pdnam, qualname, abcABC, testname, selectlinetype, stringname, sgmname, dut, cycling, id, item, x, y, fim,\'a0 sctrsize, cast(fbc as int) as fbc, count(*) as sctrcount\
+FROM ( SELECT pdnam, qualname, abcABC, testname, selectlinetype, stringname, sgmname, dut, cycling, id, item, x, y, fim, sctrsize,map('sctr0', sctr0, 'sctr1', sctr1, 'sctr2', sctr2, 'sctr3', sctr3, 'sctr4', sctr4, 'sctr5', sctr5, 'sctr6', sctr6, 'sctr7', sctr7) as map1\'a0\
+\'a0FROM prodqual_analysis.xlk_sgm\
+WHERE pdnam = 'prodcurrent_1GB'\'a0 AND qualname = 'ZY-2PASS'\'a0 AND abcABC = 'ABC'\'a0 AND testname = 'ZY-2PASS_ABC_00HR_HTDR'\'a0 AND selectlinetype = Block Line\'a0 AND stringname = Not Applicable\'a0 AND (sgmname = 2.75\'a0 OR sgmname = 3.00 ) AND dut = 0 ) as t1 lateral view\'a0explode(map1) xyz as sctr, fbc\'a0\
+GROUP BY pdnam, qualname, abcABC, testname, selectlinetype, stringname, sgmname, dut, cycling, id, item, x, y, fim,\'a0 sctrsize, fbc\
+ORDER BY pdnam, qualname, abcABC, testname, selectlinetype, stringname, sgmname, dut, cycling, id, item, x, y, fim,\'a0 sctrsize, fbc\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 ######################################################\
+# Run hive command on command line and store the result as csv \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 #\cf2 #####################################################\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 \
+hive -e \'93select talprodcnt,parcel,processname,testname,performanceunit,sctrsize,sctrsizeunit,dla,stress,note,testertype,testdate,cycling,tester_name,dut,id,item,x,y,page_type,pdnam,qualname,abc_ABC,testname,fbc from xyz limit 100\'94 | sed 's/[[:space:]]\\+/,/g' > prodQuallgfrmt100.csv\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \'a0\
+\
+######################################################\
+# When the \'91*\'92 character through error, use hive config to escape the special char\
+######################################################\'a0\
+\'a0\
+\'a0\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 \cb3 \
+\
+For example : The following threw an error.\
+\'a0\
+select `xybc.*` from prodsort.ds_bics_t6st0_sme1_pid limit 5;\
+\'a0\
+| xybc_md_ABCxlkaddr_pcs_\'a0\'a0| xybc_fr_ABCxlkaddr_pcs_\'a0\'a0| \
++--------------------------+--------------------------+------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+-----------------------------------+----------------------------------+----------------------------------+----------------------------------+-----------------------------------+-----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------\
+\'a0\
+\'a0\
+`xybc.*` wouldn\'92t work in the where clause\
+\'a0\
+Solutions: Run with following lines first \
+= ======== \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 SET\'a0hive.support.quoted.identifiers=none;\
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 set\'a0hive.resultset.use.unique.column.names=false;\cf2 \cb1 hive -e "set hive.cli.print.header = true; select * from ds_bics_t6rn1_sme1_pid where testerpgm = 'ZBC52ZZA.EXE' and product = 'TBC520000-00010.00' and dsstartdate LIKE '2017/06%' " | sed 's/[\\t]/,/g'\'a0 > /home/bdingstprd/beibei//ZBC52ZZAEXE_520_June.csv\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\
+\
+#########################################\
+# Create hive table ; Load data from a file to table \
+#########################################\
+\'a0\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl340\partightenfactor0
+\ls1\ilvl0\cf2 \kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+First change your xls frmt to csv.\'a0\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl360\partightenfactor0
+\ls2\ilvl0\cf2 \kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+CREATE EXTERNAL TABLE IF NOT EXISTS\'a0\cb4 AXYZ.prods\cb1 (\
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 	id STRING,\
+	item STRING,\
+\'a0 	x STRING ,\
+\'a0 	y STRING)\
+	ROW frmt DELIMITED\
+	FIELDS TERMINATED BY ','\
+	STORED AS TEXTFILE\
+	LOCATION '/user/kks/ForAXYZ';\
+\'a0\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl360\partightenfactor0
+\ls3\ilvl0\cf2 \kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+LOAD DATA INPATH '/user/kks/ForAXYZ.csv' OVERWRITE INTO TABLE AXYZ.prods;\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \'a0\
+\'a0\
+###########################################\
+# Complex join query in hive \
+###########################################\
+\'a0\
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 ;WITH cte AS\
+\'a0(SELECT dbo.Cable.*,\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0row_number() over(partition by dbo.Cable.TagNo order by dbo.Cable.CableRevision desc) as rn\
+\'a0 FROM dbo.Cable\'a0\
+\'a0 WHERE dbo.Cable.CableRevision = @CoreRevision\
+\'a0 ), cte2 AS\
+\'a0(SELECT dbo.Cable.TagNo, dbo.Core.*,\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0row_number() over(partition by dbo.Core.CoreNo order by dbo.Core.CoreRevision desc) as rn\
+\'a0 FROM dbo.Core INNER JOIN dbo.Cable ON dbo.Cable.Id = dbo.Core.CableId\
+\'a0 WHERE dbo.Core.CoreRevision <= @CoreRevision\
+\'a0 )\
+\'a0 SELECT *\
+\'a0 FROM cte c FULL JOIN cte2 c2 ON c.TagNo = c2.TagNo\
+\'a0 WHERE c.rn = 1 OR c2.rn = 1\
+\'a0\
+\'a0\
+\'a0\
+with TT1 as (select * from kks.foo)\'a0\
+,TT2 as\
+(select * from kks.foo)\
+select * from TT1 join TT2 on TT1.id =TT2.id\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \'a0\
+\
+UDF Reference \
+=======================\
+\'a0\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl360\partightenfactor0
+\ls4\ilvl0\cf2 \kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\ul UDTF Hive\'a0[ Java / UDTF] \ulnone \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl360\partightenfactor0
+\ls4\ilvl0\cf5 \kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}{\field{\*\fldinst{HYPERLINK "https://www.linkedin.com/pulse/hive-functions-udfudaf-udtf-examples-gaurav-singh"}}{\fldrslt \expnd0\expndtw0\kerning0
+\ul https://www.linkedin.com/pulse/hive-functions-udfudaf-udtf-examples-gaurav-singh}}\cf2 \expnd0\expndtw0\kerning0
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl360\partightenfactor0
+\ls4\ilvl0\cf2 \kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+https://acadgild.com/blog/hive-udtf/\
+\ls4\ilvl0\kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\ul UDAF\'a0\'96\'a0spark\'a0\ulnone \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl360\partightenfactor0
+\ls4\ilvl0\cf5 \kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}{\field{\*\fldinst{HYPERLINK "https://ragrawal.wordpress.com/2015/11/03/spark-custom-udaf-example/"}}{\fldrslt \expnd0\expndtw0\kerning0
+\ul https://ragrawal.wordpress.com/2015/11/03/spark-custom-udaf-example/}}\cf2 \expnd0\expndtw0\kerning0
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\sl360\partightenfactor0
+\ls4\ilvl0\cf2 \kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+\ul Existsing UDF function\ulnone \
+\ls4\ilvl0\kerning1\expnd0\expndtw0 {\listtext	\uc0\u8226 	}\expnd0\expndtw0\kerning0
+https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \'a0\
+\'a0#####################\
+#Binding variable in hive #\
+###################\
+beeline -u\'a0\'93\'a0dbc:hive2://hgadm01.companyname.com:10000/default;{\field{\*\fldinst{HYPERLINK "mailto:principal=hive/hgadm01.sandisk.com@SANDISK.COM"}}{\fldrslt \cf5 \ul \ulc5 principal=hive/xyz.xyz.com@xyz.com}}" --hiveconf x='20160725' --hiveconf y="'/sources/XY/tmp_20160725'" --hiveconf z="'hdfs:////sources/XY/Schema/XY_FINAL_SCHEMA.avsc'" -f create.sql\
+\'a0\
+\'a0\
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \ul \ulc2 Commands used for demo\ulnone \
+\'a0\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf6 Import Data on HDFS\'a0\cf2 \
+\cf6 \'97\'97\'97\'97\'97\'97\'97\'97\'97\cf2 \
+\cf6 sqoop import --connect jdbc:mysql://10.10.10.100:3306/kksdata --username=dbuser --password=companyname123 --table cells\cf2 \
+\cf6 \'a0\cf2 \
+\cf6 Import Specific table\cf2 \
+\cf6 \'97\'97\'97\'97\'97\'97\'97\'97\'97-\cf2 \
+\cf6 sqoop import --connect jdbc:mysql://10.10.10.100:3306/kksdata --username=dbuser --password=companyname123 --table cells --hive-import\cf2 \
+\cf6 \'a0\cf2 \
+\cf6 Import all tables as\'a0HIVE\'a0tables\cf2 \
+\cf6 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\cf2 \
+\cf6 sqoop import-all-tables --connect jdbc:mysql://10.10.10.100:3306/kksdata -username=dbuser --password=companyname123 --hive-import\cf2 \
+\cf6 \'a0\cf2 \
+\cf6 Import specific columns\cf2 \
+\cf6 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\cf2 \
+\cf6 sqoop import --connect jdbc:mysql://10.10.10.100:3306/kksdata --username=dbuser --password=companyname123 --table cells -columns "id, process_id" --hive-import\cf2 \
+\cf6 \'a0\cf2 \
+\cf6 Executing query\cf2 \
+\cf6 \'97\'97\'97\'97\'97\'97\'97\cf2 \
+\cf6 sqoop import --connect jdbc:mysql://10.10.10.100:3306/kksdata --username=dbuser --password=companyname123 --table cnes --where "CNENAME is NULL"\cf2 \
+\cf6 \'a0\cf2 \
+\cf6 \'a0\cf2 \
+\cf6 sqoop import --connect jdbc:mysql://10.10.10.100:3306/kksdata --username=dbuser --password=companyname123 --table cnes --where "CNENAME is NULL" --hive-import\'a0\cf2 \
+\cf6 \'a0\cf2 \
+\cf6 \'a0\cf2 \
+\cf6 \'a0\cf2 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf6 \ul \ulc6 Command for connecting to your database in another country\cf2 \ulnone \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf6 \'a0\cf2 \
+\pard\pardeftab720\sl260\partightenfactor0
+\cf2 sqoop import --connect jdbc:mysql://10.10.10.10:3306/f120_def_lookup --username=us_admin --password=us_admin --table xyz --hive-import\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \'a0\
+\'a0\
+}
