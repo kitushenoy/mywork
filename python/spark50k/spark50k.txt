@@ -1,0 +1,65 @@
+
+###############################################
+#### My work on accessing tables more than 50k columns	 #
+############################################### 
+ 
+1. How to use Spark on  my Platform?
+ 
+• Ssh into one of the edge node on our cloudera platform
+• Ssh <unix username>@hostname:
+• Once logged in, type the spark command as mentioned in next section??
+2. Running Spark in different mode 
+• Load Spark Shell -> pyspark --master yarn --executor-memory 3G --executor-cores 2 --driver-cores 3 --driver-memory 4G --packages com.databricks:spark-csv_2.11:1.2.0
+• Submit spark job locally ->  spark-submit --master local --executor-memory 3G --executor-cores 2 --driver-cores 3 --driver-memory 4G --packages com.databricks:spark-csv_2.11:1.2.0 sparkSQLexample.py 
+• Submit spark job in a distributed mode - > spark-submit --master yarn --executor-memory 3G --executor-cores 2 --driver-cores 3 --driver-memory 4G --packages com.databricks:spark-csv_2.11:1.2.0 sparkSQLexample.py 
+• Refer sample here ->  sparkSQLexample.py
+3. Command Reference
+ 
+• Loading Spark Context
+pyspark --master yarn --executor-memory 3G --executor-cores 2 --driver-cores 3 --driver-memory 4G --packages com.databricks:spark-csv_2.11:1.2.0 --jars spark-avro_2.11-3.0.0.jar
+• Reading the Data/Loading the Data into SparkDataFrame
+Data_SparkDF=sqlContext.read.format("com.databricks.spark.avro").load(“/xtf/“)
+• Extract data from SparkDataFrame
+Data_SparkDF.select("id").show() - > displays the top 20 Lot number
+Data_SparkDF.select("id").show(Data_SparkDF.count(),False).show() - > displays all the data for that column
+Data_SparkDF.select("id").limit(10).show() -> limit by 10
+• Extract a column data omitting the null values
+Data_SparkDF.where(col(“test”).isNotNull()).show()
+• Display the column names of the table
+First load the data and then print schema.
+Data_SparkDF.printSchema()
+• Count column values without null
+Data_SparkDF.filter(Data_SparkDF. test.isNotNull()).count()
+• Drop the values with null and show only the rest
+Data_SparkDF.na.drop(subset=[“test”]).show()
+   4. Simple computing on spark Dataframe
+• Calculate average of a given column
+[This will automatically omit the null]
+Data_SparkDF=sqlContext.read.format("com.databricks.spark.avro").load(“/test/xys.avro")
+OR Load a avro file of a day only
+ 
+Data_SparkDF=sqlContext.read.format("com.databricks.spark.avro").load(“syz.avro")
+kk1=Data_SparkDF.select(Data_SparkDF.cc.cast('float').alias('cc'))
+ll=kk1.groupBy().agg(mean(kk1["cc"]).alias("mean")).collect()
+print "Mean is :  ",ll
+P.S.: Please note that If the test parameter was not carried out for a particular process stage its possible that the file your are referring to may not have that column. You will then get Null pointer exception; also the error message might say that the column does not exists
+  5. Write the result into csv
+• Write the data[or final result] from the spark Data frame into csv
+Data_SparkDF.write.format('com.databricks.spark.csv').save('mycsv.csv')
+P.S.: the files gets automatically uploaded to hdfs location of your user’s home directory. In my case /home/testxus
+• View the data saved on hdfs
+Go to hue and click on manage HDFS on top right. View your csv file in user’s home folder.
+
+ 6. Additional Command
+• Download the column name into a text
+hive -S -e "use default; describe gg;” | awk -F" " '{print $1}' > ~/filename.txt
+• Download the query result in csv format
+hive -e "select * from default.prd where dsstartdate > '2017/07/01' and dsstartdate < '2017/07/30'" | sed 's/[\t]/,/g' > saveFile.csv
+• Find the column name starting with ‘vth’; by converting the spark data frame to pandas dataframe
+dt=sqlContext.sql("describe default.gg”)
+import pandas as pd
+dt.show(dt.count(),False)
+pp=dt.toPandas()
+pp[pp[”col_name"].str.contains(‘vth')==True]
+• Find the data which falls in the range of given dates or any other where condition user wants to specify.
+sqlContext.sql(" select * from default.prd where dsstartdate > '2017/07/01' and dsstartdate < '2017/07/30’
