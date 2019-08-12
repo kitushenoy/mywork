@@ -1,0 +1,17 @@
+## this query joins two table with criteria and using partition
+
+
+;WITH cte AS
+ (SELECT dbo.Cable.*, 
+         row_number() over(partition by dbo.Cable.TagNo order by dbo.Cable.CableRevision desc) as rn
+  FROM dbo.Cable 
+  WHERE dbo.Cable.CableRevision = @CoreRevision
+  ), cte2 AS
+ (SELECT dbo.Cable.TagNo, dbo.Core.*, 
+         row_number() over(partition by dbo.Core.CoreNo order by dbo.Core.CoreRevision desc) as rn
+  FROM dbo.Core INNER JOIN dbo.Cable ON dbo.Cable.Id = dbo.Core.CableId
+  WHERE dbo.Core.CoreRevision <= @CoreRevision
+  )
+  SELECT *
+  FROM cte c FULL JOIN cte2 c2 ON c.TagNo = c2.TagNo
+  WHERE c.rn = 1 OR c2.rn = 1
