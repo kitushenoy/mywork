@@ -36,11 +36,11 @@ from debugxx import debug1
 from logging.handlers import RotatingFileHandler
 '''
 sqlContext = SQLContext(sc)
-        logger.info(" No of Files to process - Single Die %s",len(fileNames))
+        logger.info(" No of Files to process - Single item %s",len(fileNames))
 
-        print " >>>> : Start process for 2 Die <<<< "
-        ddLevel = "2Die"
-        Die2Starttime = datetime.now()
+        print " >>>> : Start process for 2 item <<<< "
+        ddLevel = "2item"
+        item2Starttime = datetime.now()
         if debugMode == 0:
                 rdd = sc.parallelize(fileNames[:2])
         else:
@@ -83,12 +83,12 @@ peak.registerTempTable("dd_4_backupjun28")
 quantile=hive_context.sql("select * from xx.dd_2").toPandas().quantile(vec)
 
 print "quantile",quantile
-tmpRawData = "/tmp/ICCMovingAvg/DieLevelRawData"
+tmpRawData = "/tmp/ICCMovingAvg/itemLevelRawData"
 hdfsbasepath = "/ICCCharacterisation/MovingAvg"
 
 tmpFolder = os.path.dirname(tmpRawData)
-hdfsRawDataFolder= os.path.join(hdfsbasepath,"DieLevelRawData")
-ddLevel ="2Die"
+hdfsRawDataFolder= os.path.join(hdfsbasepath,"itemLevelRawData")
+ddLevel ="2item"
 _strdf = os.path.join(tmpFolder,'Prob_mvAvg_Final'+ddLevel+time.strftime("%d_%m_%y"))
 quantile.to_csv(_strdf+".csv", sep='\t')
 
