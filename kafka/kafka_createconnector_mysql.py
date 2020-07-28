@@ -7,7 +7,7 @@ import requests
 
 
 KAFKA_CONNECT_URL = "http://localhost:8083/connectors"
-
+CONNECTOR_NAME = "connector1"
 
 def configure_connector():
     """Calls Kafka Connect to create the Connector"""
